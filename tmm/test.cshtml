@@ -1,0 +1,152 @@
+﻿<section class="page-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <ul class="breadcrumb">
+                    <li><a href="@Url.Action("index", "home")">@Resources.Home</a></li>
+                    <li class="active">@Resources.Products</li>
+                </ul>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <h1>@Resources.Products</h1>
+            </div>
+        </div>
+    </div>
+</section>
+@{
+    var products = ((IEnumerable<TMM.Models.Product>)ViewBag.Products);
+    //var products2 = ViewBag.Products;
+}
+
+
+<div class="container" data-spy="scroll" data-target="#sidebar">
+    <div class="col-md-3">
+        <aside class="sidebar" id="sidebar" data-plugin-sticky data-plugin-options='{"minWidth": 991, "containerSelector": ".container", "padding": {"top": 110}}'>
+            <h4 class="heading-primary">@Resources.Products</h4>
+            <ul class="nav-list mb-xl show">
+                @foreach (var productCategory in products.Select(p => p.ProductCategory).Distinct())
+                {
+                    <li class="productCategory">
+                        <a data-hash href="#productcategory@(productCategory.ProductCategoryId)">@(productCategory.Name)</a>
+                        <ul>
+                            @foreach (var productSubCategory in products.Where(p => p.ProductCategoryId == productCategory.ProductCategoryId && p.ProductSubCategory != null).Select(p => p.ProductSubCategory).Distinct())
+                            {
+                                <li class="productSubCategory">
+                                    <a data-hash href="#productsubcategory@(productSubCategory.ProductSubCategoryId)">@(productSubCategory.Name) </a>
+                                </li>
+                            }
+                        </ul>
+                    </li>
+                }
+            </ul>
+        </aside>
+    </div>
+    <div class="col-md-9">
+        @foreach (var productCategory in products.Select(p => p.ProductCategory).Distinct())
+        {
+            <div id="productcategory@(productCategory.ProductCategoryId)">
+                <h2 class="col-lg-12 col-md-12"><strong>@productCategory.Name</strong></h2>
+                @foreach (var productSubCategory in products.Where(p => p.ProductCategoryId == productCategory.ProductCategoryId && p.ProductSubCategory != null).Select(p => p.ProductSubCategory).Distinct())
+                {
+                    <div id="productsubcategory@(productSubCategory.ProductSubCategoryId)">
+                        <h4 class="col-lg-12 col-md-12"><strong>@productSubCategory.Name</strong></h4>
+                        <div class="row">
+                            @foreach (var product in products.Where(p => p.ProductSubCategoryId == productSubCategory.ProductSubCategoryId))
+                            {
+                                <div class="col-md-4 col-sm-6 col-xs-6">
+                                    <div class="product thumbnail" style="height:250px; border:hidden;">
+                                        <div style="height:200px">
+                                            <a href="#product@(product.ProductId)" class="btn btn-link" data-plugin-options='{"type":"image"}' data-toggle="modal" data-target="#@(product.ProductId)" style="white-space: normal; text-align: left;">
+                                                <img class="img-responsive" src="http://localhost:4502/lib/tmm/Product/Product@(product.ProductId).jpg" alt="@Resources.Product @Resources.Image" style="width:250px; height:200px;">
+                                                <p>@product.Name</p>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="modal fade" id="@(product.ProductId)" tabindex="-1" role="dialog" aria-labelledby="defaultModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                                    <h4 class="modal-title" id="defaultModalLabel">@product.Name</h4>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <img class="img-responsive center-block" width="500" height="250" src="http://localhost:4502/lib/tmm/Product/Product@(product.ProductId).jpg" alt="@Resources.Product @Resources.Image" style="padding-bottom:10px;">
+                                                    <p style="white-space:normal;">@Html.Raw(Html.Encode(product.Description).Replace("\n", "<br />"))</p>
+                                                    <div>
+                                                        @*@if (System.IO.File.Exists(Server.MapPath("http://localhost:4502/lib/tmm/Product/Product@(product.ProductId).pdf")))*@
+                                                        
+                                                            <a id="more" href="http://localhost:4502/lib/tmm/Product/Product@(product.ProductId).pdf" target="_blank" class="btn btn-borders btn-xs center-block">
+                                                                @Resources.LearnMore
+                                                            </a>
+                                                        
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-default" data-dismiss="modal">@Resources.Close</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+                <div class="row">
+                    @foreach (var product in products.Where(p => p.ProductSubCategoryId == null && p.ProductCategoryId == productCategory.ProductCategoryId))
+                    {
+                        <div class="col-md-4 col-sm-6 col-xs-6">
+                            <div class="product thumbnail" style="height:280px; border:hidden;">
+                                <div style="height:200px">
+                                    <a href="#product@(product.ProductId)" class="btn btn-link" data-plugin-options='{"type":"image"}' data-toggle="modal" data-target="#@(product.ProductId)" style="white-space: normal; text-align: left;">
+                                        <img class="img-responsive" src="http://localhost:4502/lib/tmm/Product/Product@(product.ProductId).jpg" alt="@Resources.Product @Resources.Image" style="width:250px; height:200px;">
+                                        <p>@product.Name</p>
+                                    </a>
+                                </div>
+                                <div class="modal fade" id="@(product.ProductId)" tabindex="-1" role="dialog" aria-labelledby="defaultModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                                <h4 class="modal-title" id="defaultModalLabel">@product.Name</h4>
+                                            </div>
+                                            <div class="modal-body">
+                                                <img class="img-responsive center-block" width="500" height="250" src="http://localhost:4502/lib/tmm/Product/Product@(product.ProductId).jpg" alt="@Resources.Product @Resources.Image" style="padding-bottom:10px;">
+                                                <p style="white-space:normal;">@Html.Raw(Html.Encode(product.Description).Replace("\n", "<br />"))</p>
+                                                @*@if (System.IO.File.Exists("http://localhost:4502/lib/tmm/Product/Product@(product.ProductId).pdf"))*@
+                                                
+                                                    <a id="more" href="http://localhost:4502/lib/tmm/Product/Product@(product.ProductId).jpg" target="_blank" class="btn btn-borders btn-xs center-block">
+                                                        @Resources.LearnMore
+                                                    </a>
+                                                
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-default" data-dismiss="modal">@Resources.Close</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+
+@section Scripts
+{
+    <script>
+        var urlArray = document.location.href.split("/");
+        if (urlArray.length == 7) {
+            var selectedId = urlArray[6];
+            var selector = 'a[href="*"]'.replace('*', selectedId);
+            var focusElement = document.querySelector(selector);
+            focusElement.click();
+        }
+    </script>
+}
